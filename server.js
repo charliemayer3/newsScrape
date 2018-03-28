@@ -33,12 +33,6 @@ mongoose.connect("mongodb://localhost/newsScraper", {
   // useMongoClient: true
 });
 
-
-// Main route (simple Hello World Message)
-// app.get("/", function(req, res) {
-//   res.send("Hello world");
-// });
-
 // A GET route for scraping the echojs website
 app.get("/scrape", function(req, res) {
   // First, we grab the body of the html with request
@@ -68,9 +62,10 @@ app.get("/scrape", function(req, res) {
           return res.json(err);
         });
     });
-
+    event.preventDefault()
+	// location.href = "/"
     // If we were able to successfully scrape and save an Article, send a message to the client
-    res.send("Scrape Complete");
+    // res.send("Scrape Complete");
   });
 });
 
@@ -131,6 +126,21 @@ app.post("/articles/:id", function(req, res) {
       res.json(err);
     });
 });
+
+app.post("/savedArticles/:id", function(req, res) {
+	console.log(req.params.id)
+	var ObjectId = 'ObjectId("' + req.params.id + '")';
+	console.log(ObjectId)
+	db.Article.findOneAndUpdate({ _id: ObjectId }, {$push: { saved: "yes" }}, { new: true });
+        // .then(function(dbArticle) {
+        //   // View the added result in the console
+        //   console.log(dbArticle);
+        // })
+        // .catch(function(err) {
+        //   // If an error occurred, send it to the client
+        //   return res.json(err);
+        // });
+})
 
 // Start the server
 app.listen(PORT, function() {
